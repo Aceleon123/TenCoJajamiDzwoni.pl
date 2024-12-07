@@ -1,22 +1,55 @@
-// Replace this with your Minecraft server IP and port
 const serverIP = "tencojajamidzwoni.pl";
 const apiURL = `https://api.mcsrvstat.us/2/${serverIP}`;
+
+// Funkcja przetwarzająca kody kolorów Minecraft na HTML
+function formatMotd(motd) {
+    if (!motd) return "No MOTD available";
+
+    // Zamiana kodów § na odpowiednie style HTML
+    const colorCodes = {
+        "0": "black",
+        "1": "darkblue",
+        "2": "darkgreen",
+        "3": "darkaqua",
+        "4": "darkred",
+        "5": "darkpurple",
+        "6": "gold",
+        "7": "gray",
+        "8": "darkgray",
+        "9": "blue",
+        "a": "green",
+        "b": "aqua",
+        "c": "red",
+        "d": "lightpurple",
+        "e": "yellow",
+        "f": "white",
+        "l": "font-weight:bold",
+        "m": "text-decoration:line-through",
+        "n": "text-decoration:underline",
+        "o": "font-style:italic",
+        "r": "color:inherit;font-weight:normal;text-decoration:none;font-style:normal"
+    };
+
+    return motd.replace(/§([0-9a-flmnor])/g, (_, code) => {
+        const style = colorCodes[code];
+        if (style.includes(":")) {
+            return `<span style="${style}">`;
+        }
+        return `<span style="color:${style}">`;
+    }) + "</span>".repeat((motd.match(/§[0-9a-flmnor]/g) || []).length);
+}
 
 async function fetchServerStats() {
     try {
         const response = await fetch(apiURL);
         const data = await response.json();
 
-        document.getElementById("server-motd").textContent = data.motd ? data.motd.clean.join(" ") : "No MOTD available";
+        // Wyświetlanie MOTD z kolorami
+        document.getElementById("server-motd").innerHTML = data.motd ? formatMotd(data.motd.raw.join("\n")) : "No MOTD available";
 
         if (data.online) {
             document.getElementById("server-status").textContent = "Online";
             document.getElementById("player-count").textContent = data.players.online;
-			
-			document.getElementById("player-list").innerHTML =
-				data.players.list
-					? data.players.list.map(player => `<span>${player}</span>`).join("")
-					: "None";
 
             const playerListContainer = document.getElementById("player-list");
             playerListContainer.innerHTML = "";
@@ -46,8 +79,9 @@ async function fetchServerStats() {
         console.error("Error fetching server stats:", error);
     }
 }
+
 document.getElementById("server-title").textContent = "TenCoJajamiDzwoni.pl";
 fetchServerStats();
 
-// Refresh stats every 3 seconds
+// Odświeżanie statystyk co 3 sekundy
 setInterval(fetchServerStats, 3000);
