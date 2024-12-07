@@ -1,11 +1,10 @@
 const serverIP = "tencojajamidzwoni.pl";
 const apiURL = `https://api.mcsrvstat.us/2/${serverIP}`;
 
-// Funkcja przetwarzająca kody kolorów Minecraft na HTML
+
 function formatMotd(motd) {
     if (!motd) return "No MOTD available";
 
-    // Zamiana kodów § na odpowiednie style HTML
     const colorCodes = {
         "0": "black",
         "1": "darkblue",
@@ -43,9 +42,7 @@ async function fetchServerStats() {
     try {
         const response = await fetch(apiURL);
         const data = await response.json();
-
-        // Wyświetlanie MOTD z kolorami
-        document.getElementById("server-motd").innerHTML = data.motd ? formatMotd(data.motd.raw.join("\n")) : "No MOTD available";
+ document.getElementById("server-motd").innerHTML = data.motd ? formatMotd(data.motd.raw.join("\n")) : "No MOTD available";
 
         if (data.online) {
             document.getElementById("server-status").textContent = "Online";
