@@ -1,9 +1,8 @@
 const serverIP = "tencojajamidzwoni.pl";
 const apiURL = `https://api.mcsrvstat.us/2/${serverIP}`;
 
-
-function formatMotd(motd) {
-    if (!motd) return "No MOTD available";
+function formatMotd(rawMotd) {
+    if (!rawMotd || rawMotd.length === 0) return "No MOTD available";
 
     const colorCodes = {
         "0": "black",
@@ -29,20 +28,29 @@ function formatMotd(motd) {
         "r": "color:inherit;font-weight:normal;text-decoration:none;font-style:normal"
     };
 
-    return motd.replace(/§([0-9a-flmnor])/g, (_, code) => {
-        const style = colorCodes[code];
-        if (style.includes(":")) {
-            return `<span style="${style}">`;
-        }
-        return `<span style="color:${style}">`;
-    }) + "</span>".repeat((motd.match(/§[0-9a-flmnor]/g) || []).length);
+    return rawMotd
+        .join(" ") // Połącz linie w jedną
+        .replace(/§([0-9a-flmnor])/g, (_, code) => {
+            const style = colorCodes[code];
+            if (style.includes(":")) {
+                return `<span style="${style}">`;
+            }
+            return `<span style="color:${style}">`;
+        })
+        + "</span>".repeat((rawMotd.join(" ").match(/§[0-9a-flmnor]/g) || []).length); 
 }
 
 async function fetchServerStats() {
     try {
         const response = await fetch(apiURL);
         const data = await response.json();
- document.getElementById("server-motd").innerHTML = data.motd ? formatMotd(data.motd.raw.join("\n")) : "No MOTD available";
+
+        const motdElement = document.getElementById("server-motd");
+        if (data.motd && data.motd.raw) {
+            motdElement.innerHTML = formatMotd(data.motd.raw);
+        } else {
+            motdElement.textContent = "No MOTD available";
+        }
 
         if (data.online) {
             document.getElementById("server-status").textContent = "Online";
