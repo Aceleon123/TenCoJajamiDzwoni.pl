@@ -1,4 +1,4 @@
-const serverIP = "tencojajamidzwoni.pl";
+const serverIP = "nightlycored.cloudnord.net";
 const apiURL = `https://api.mcsrvstat.us/2/${serverIP}`;
 
 function formatMotd(rawMotd) {
