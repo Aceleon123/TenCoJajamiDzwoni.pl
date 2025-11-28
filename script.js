@@ -1,4 +1,4 @@
-const serverIP = "nightlycored.cloudnord.net";
+const serverIP = "TimCraft.aternos.me:37260";
 const apiURL = `https://api.mcsrvstat.us/2/${serverIP}`;
 
 function formatMotd(rawMotd) {
